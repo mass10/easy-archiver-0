@@ -1,8 +1,93 @@
 extern crate chrono;
 
-mod stopwatch;
-mod util;
 use std::io::Write;
+
+struct Util {}
+
+impl Util {
+	/// タイムスタンプ "%Y-%m-%d %H:%M:%S%.3f" を返します。
+	#[allow(unused)]
+	pub fn timestamp0() -> String {
+		let date = chrono::Local::now();
+		return format!("{}", date.format("%Y-%m-%d %H:%M:%S%.3f"));
+	}
+
+	/// タイムスタンプ "%Y%m%d-%H%M%S" を返します。
+	#[allow(unused)]
+	pub fn timestamp1() -> String {
+		let date = chrono::Local::now();
+		return format!("{}", date.format("%Y%m%d-%H%M%S"));
+	}
+}
+
+trait MyFormatting1 {
+	/// 経過時間の文字列表現を得る
+	fn to_string(&self) -> String;
+	/// 経過時間の文字列表現を得る
+	fn to_string2(&self) -> String;
+}
+
+impl MyFormatting1 for std::time::Duration {
+	fn to_string(&self) -> String {
+		let mut sec = self.as_secs();
+		let mut min = 0;
+		let mut hour = 0;
+		while 60 <= sec {
+			min += 1;
+			sec -= 60;
+		}
+		while 60 <= min {
+			hour += 1;
+			min -= 60;
+		}
+		let s = format!("{:02}:{:02}:{:02}", hour, min, sec);
+		return s;
+	}
+
+	fn to_string2(&self) -> String {
+		let mut millis = self.as_millis();
+		let mut sec = 0;
+		let mut min = 0;
+		let mut hour = 0;
+		while 1000 <= millis {
+			sec += 1;
+			millis -= 1000;
+		}
+		while 60 <= sec {
+			min += 1;
+			sec -= 60;
+		}
+		while 60 <= min {
+			hour += 1;
+			min -= 60;
+		}
+		let s = format!("{:02}:{:02}:{:02}:{:03}", hour, min, sec, millis);
+		return s;
+	}
+}
+
+struct Stopwatch {
+	_time: std::time::Instant,
+}
+
+impl Stopwatch {
+	/// オブジェクトを生成します。
+	pub fn new() -> Stopwatch {
+		return Stopwatch { _time: std::time::Instant::now() };
+	}
+
+	/// 経過時間の文字列表現を返します。
+	pub fn elapsed_text(self: &Stopwatch) -> String {
+		let elapsed = std::time::Instant::now() - self._time;
+		return format!("{}", elapsed.to_string2());
+	}
+}
+
+#[allow(dead_code)]
+fn format_duration(left: std::time::Instant, right: std::time::Instant) -> String {
+	let elapsed = right - left;
+	return elapsed.to_string2();
+}
 
 /// ディレクトリをコピーします。
 fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error::Error>> {
@@ -100,7 +185,7 @@ fn call_zip7(left: &str, right: &str) -> std::result::Result<(), Box<dyn std::er
 /// 一時ディレクトリ
 fn get_temp_dir(path: &str) -> std::result::Result<String, Box<dyn std::error::Error>> {
 	// タイムスタンプ(%Y%m%d-%H%M%S)
-	let current_timestamp = util::Util::timestamp1();
+	let current_timestamp = Util::timestamp1();
 
 	// ディレクトリ名
 	let left_name = get_name_only(&path)?;
@@ -128,7 +213,7 @@ fn zip_main(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error
 	let left_absolute_path = get_absolute_path(path_arg);
 
 	// タイムスタンプ(%Y%m%d-%H%M%S)
-	let current_timestamp = util::Util::timestamp1();
+	let current_timestamp = Util::timestamp1();
 
 	// 一時ディレクトリ
 	let tmp_dir = get_temp_dir(&left_absolute_path)?;
@@ -161,7 +246,7 @@ fn main() {
 	let target = &args[0];
 
 	// 処理時間計測用ストップウォッチ
-	let stopwatch = stopwatch::Stopwatch::new();
+	let stopwatch = Stopwatch::new();
 
 	// 複製
 	let result = zip_main(&target);
