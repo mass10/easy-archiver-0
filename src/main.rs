@@ -1,7 +1,5 @@
 extern crate chrono;
 
-use std::io::Write;
-
 struct Util {}
 
 impl Util {
@@ -150,16 +148,11 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 	return Ok(0);
 }
 
-fn _test_write(out: &mut std::fs::File) -> std::result::Result<(), Box<dyn std::error::Error>> {
-	out.write_all(b"")?;
-	return Ok(());
-}
-
 /// フルパスに変換
-fn get_absolute_path(path: &str) -> String {
-	let absolute_path = std::fs::canonicalize(path).unwrap();
+fn get_absolute_path(path: &str) -> std::result::Result<String, Box<dyn std::error::Error>> {
+	let absolute_path = std::fs::canonicalize(path)?;
 	let result = absolute_path.as_path().as_os_str().to_str().unwrap();
-	return result.to_string();
+	return Ok(result.to_string());
 }
 
 /// 書庫化 & 圧縮(ZIP)
@@ -210,7 +203,7 @@ fn get_name_only(path: &str) -> std::result::Result<String, Box<dyn std::error::
 /// 書庫化 & ZIP 圧縮
 fn zip_main(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	// フルパスに変換
-	let left_absolute_path = get_absolute_path(path_arg);
+	let left_absolute_path = get_absolute_path(path_arg)?;
 
 	// タイムスタンプ(%Y%m%d-%H%M%S)
 	let current_timestamp = Util::timestamp1();
@@ -240,6 +233,7 @@ fn main() {
 	let args: std::vec::Vec<String> = std::env::args().skip(1).collect();
 	if args.len() == 0 {
 		println!("パスを指定します。");
+		std::thread::sleep(std::time::Duration::from_secs(3));
 		return;
 	}
 
