@@ -253,6 +253,7 @@ fn main() {
 	let result = zip_main(&target);
 	if result.is_err() {
 		println!("[ERROR] エラー！理由: {:?}", result.err().unwrap());
+		std::thread::sleep(std::time::Duration::from_secs(3));
 		return;
 	}
 
@@ -261,4 +262,6 @@ fn main() {
 
 	// サマリー
 	println!("[TRACE] end. (処理時間: {})", duration_time);
+
+	std::thread::sleep(std::time::Duration::from_secs(3));
 }
