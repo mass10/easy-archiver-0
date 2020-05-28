@@ -18,6 +18,19 @@ impl Util {
 	}
 }
 
+fn input_text() -> String {
+	let mut line = String::new();
+	let result = std::io::stdin().read_line(&mut line);
+	if result.is_err() {
+		return String::new();
+	}
+	return line;
+}
+
+fn pause() {
+	let _ = input_text();
+}
+
 trait MyFormatting1 {
 	/// 経過時間の文字列表現を得る
 	fn to_string(&self) -> String;
@@ -250,7 +263,7 @@ fn main() {
 	let result = zip_main(&target);
 	if result.is_err() {
 		println!("[ERROR] エラー！理由: {:?}", result.err().unwrap());
-		std::thread::sleep(std::time::Duration::from_secs(3));
+		pause();
 		return;
 	}
 
@@ -260,5 +273,5 @@ fn main() {
 	// サマリー
 	println!("[TRACE] end. (処理時間: {})", duration_time);
 
-	std::thread::sleep(std::time::Duration::from_secs(3));
+	pause();
 }
