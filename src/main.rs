@@ -120,6 +120,9 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		if dir_name == "Release" {
 			return Ok(0);
 		}
+		if dir_name == "target" {
+			return Ok(0);
+		}
 
 		// コピー先にディレクトリを作成します。
 		std::fs::create_dir_all(destination_path)?;
