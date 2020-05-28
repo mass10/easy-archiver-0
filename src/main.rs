@@ -243,6 +243,7 @@ fn main() {
 		return;
 	}
 
+	// 第一引数のみ
 	let target = &args[0];
 
 	// 処理時間計測用ストップウォッチ
