@@ -18,6 +18,7 @@ impl Util {
 	}
 }
 
+/// 標準入力から1行読み込みます。
 fn input_text() -> String {
 	let mut line = String::new();
 	let result = std::io::stdin().read_line(&mut line);
@@ -27,6 +28,7 @@ fn input_text() -> String {
 	return line;
 }
 
+/// エンターキーが押されるまで待機します。
 fn pause() {
 	let _ = input_text();
 }
