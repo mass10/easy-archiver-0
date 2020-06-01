@@ -170,12 +170,12 @@ fn get_absolute_path(path: &str) -> std::result::Result<String, Box<dyn std::err
 }
 
 /// 書庫化 & 圧縮(ZIP)
-fn call_zip7(left: &str, right: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
+fn compress(path_to_directory: &str, zip_archive_name: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	// 7zip 呼び出し
 	println!("[TRACE] 7zip 呼び出し");
 	let command_path = "C:\\Program Files\\7-Zip\\7z.exe";
 	let mut command = std::process::Command::new(command_path);
-	let args = ["a", right, left];
+	let args = ["a", zip_archive_name, path_to_directory];
 	let mut command = command.args(&args).spawn()?;
 	let status = command.wait()?;
 
@@ -215,7 +215,7 @@ fn get_name_only(path: &str) -> std::result::Result<String, Box<dyn std::error::
 }
 
 /// 書庫化 & ZIP 圧縮
-fn zip_main(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
+fn zip(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	// フルパスに変換
 	let left_absolute_path = get_absolute_path(path_arg)?;
 
@@ -235,7 +235,7 @@ fn zip_main(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error
 
 	// 書庫化
 	println!("[TRACE] 書庫化");
-	call_zip7(&tmp_dir, zip_archive_name.as_str())?;
+	compress(&tmp_dir, zip_archive_name.as_str())?;
 	println!("[TRACE] {}個のファイルをコピーしました。", files_copied);
 
 	return Ok(());
@@ -257,8 +257,8 @@ fn main() {
 	// 処理時間計測用ストップウォッチ
 	let stopwatch = Stopwatch::new();
 
-	// 複製
-	let result = zip_main(&target);
+	// 書庫化 & ZIP 圧縮
+	let result = zip(&target);
 	if result.is_err() {
 		println!("[ERROR] エラー！理由: {:?}", result.err().unwrap());
 		pause();
