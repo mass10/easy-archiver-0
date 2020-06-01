@@ -163,6 +163,8 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		return Ok(1);
 	}
 
+	println!("[WARN] 不明なファイルシステムです。{}", source_path.as_os_str().to_str().unwrap());
+
 	return Ok(0);
 }
 
