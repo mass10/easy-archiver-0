@@ -35,13 +35,13 @@ fn pause() {
 
 trait MyFormatting1 {
 	/// 経過時間の文字列表現を得る
-	fn to_string(&self) -> String;
+	fn to_my_string(&self) -> String;
 	/// 経過時間の文字列表現を得る
-	fn to_string2(&self) -> String;
+	fn to_my_string2(&self) -> String;
 }
 
 impl MyFormatting1 for std::time::Duration {
-	fn to_string(&self) -> String {
+	fn to_my_string(&self) -> String {
 		let mut sec = self.as_secs();
 		let mut min = 0;
 		let mut hour = 0;
@@ -57,7 +57,7 @@ impl MyFormatting1 for std::time::Duration {
 		return s;
 	}
 
-	fn to_string2(&self) -> String {
+	fn to_my_string2(&self) -> String {
 		let mut millis = self.as_millis();
 		let mut sec = 0;
 		let mut min = 0;
@@ -92,14 +92,14 @@ impl Stopwatch {
 	/// 経過時間の文字列表現を返します。
 	pub fn elapsed_text(self: &Stopwatch) -> String {
 		let elapsed = std::time::Instant::now() - self._time;
-		return format!("{}", elapsed.to_string2());
+		return format!("{}", elapsed.to_my_string2());
 	}
 }
 
 #[allow(dead_code)]
 fn format_duration(left: std::time::Instant, right: std::time::Instant) -> String {
 	let elapsed = right - left;
-	return elapsed.to_string2();
+	return elapsed.to_my_string2();
 }
 
 /// ディレクトリをコピーします。
