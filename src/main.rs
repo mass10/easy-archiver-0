@@ -96,12 +96,6 @@ impl Stopwatch {
 	}
 }
 
-#[allow(dead_code)]
-fn format_duration(left: std::time::Instant, right: std::time::Instant) -> String {
-	let elapsed = right - left;
-	return elapsed.to_my_string2();
-}
-
 /// ディレクトリをコピーします。
 fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error::Error>> {
 	// 元
