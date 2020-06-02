@@ -172,7 +172,6 @@ fn get_absolute_path(path: &str) -> std::result::Result<String, Box<dyn std::err
 /// 書庫化 & 圧縮(ZIP)
 fn compress(path_to_directory: &str, zip_archive_name: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	// 7zip 呼び出し
-	println!("[TRACE] 7zip 呼び出し");
 	let command_path = "C:\\Program Files\\7-Zip\\7z.exe";
 	let mut command = std::process::Command::new(command_path);
 	let args = ["a", zip_archive_name, path_to_directory];
@@ -186,6 +185,7 @@ fn compress(path_to_directory: &str, zip_archive_name: &str) -> std::result::Res
 		println!("[WARN] yarn exited with status: {}", exit_code);
 		std::process::exit(exit_code);
 	}
+
 	return Ok(());
 }
 
@@ -226,7 +226,6 @@ fn zip(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	let tmp_dir = get_temp_dir(&left_absolute_path)?;
 
 	// バックアップ対象ファイルを列挙します。
-	println!("[TRACE] バックアップ対象ファイルを列挙");
 	let files_copied = xcopy(&left_absolute_path, &tmp_dir)?;
 
 	// 新しいパス
@@ -234,7 +233,6 @@ fn zip(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	println!("[TRACE] destination: {}", zip_archive_name.as_str());
 
 	// 書庫化
-	println!("[TRACE] 書庫化");
 	compress(&tmp_dir, zip_archive_name.as_str())?;
 	println!("[TRACE] {}個のファイルをコピーしました。", files_copied);
 
