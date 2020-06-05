@@ -19,7 +19,8 @@ impl Util {
 	}
 }
 
-/// 標準入力から1行読み込みます。
+#[allow(unused)]
+/// 標準入力から1行読み込みます。終端の改行文字を除く1行全体を返します。
 fn read_line() -> String {
 	let mut line = String::new();
 	let result = std::io::stdin().read_line(&mut line);
@@ -29,6 +30,7 @@ fn read_line() -> String {
 	return line;
 }
 
+#[allow(unused)]
 /// エンターキーが押されるまで待機します。
 fn pause() {
 	let _ = read_line();
@@ -37,13 +39,13 @@ fn pause() {
 /// 独自フォーマッターを定義しています。
 trait MyFormatting1 {
 	/// 経過時間の文字列表現を得る
-	fn to_my_string(&self) -> String;
+	fn to_string1(&self) -> String;
 	/// 経過時間の文字列表現を得る
-	fn to_my_string2(&self) -> String;
+	fn to_string2(&self) -> String;
 }
 
 impl MyFormatting1 for std::time::Duration {
-	fn to_my_string(&self) -> String {
+	fn to_string1(&self) -> String {
 		let mut sec = self.as_secs();
 		let mut min = 0;
 		let mut hour = 0;
@@ -59,7 +61,7 @@ impl MyFormatting1 for std::time::Duration {
 		return s;
 	}
 
-	fn to_my_string2(&self) -> String {
+	fn to_string2(&self) -> String {
 		let mut millis = self.as_millis();
 		let mut sec = 0;
 		let mut min = 0;
@@ -92,11 +94,14 @@ impl Stopwatch {
 	pub fn new() -> Stopwatch {
 		return Stopwatch { _time: std::time::Instant::now() };
 	}
+}
 
+impl std::fmt::Display for Stopwatch {
 	/// 経過時間の文字列表現を返します。
-	pub fn elapsed_text(self: &Stopwatch) -> String {
+	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
 		let elapsed = std::time::Instant::now() - self._time;
-		return format!("{}", elapsed.to_my_string2());
+		write!(f, "{}", elapsed.to_string2())?;
+		return Ok(());
 	}
 }
 
@@ -249,7 +254,7 @@ fn main() {
 	let args: std::vec::Vec<String> = std::env::args().skip(1).collect();
 	if args.len() == 0 {
 		println!("パスを指定します。");
-		std::thread::sleep(std::time::Duration::from_secs(3));
+		std::thread::sleep(std::time::Duration::from_secs(2));
 		return;
 	}
 
@@ -263,15 +268,12 @@ fn main() {
 	let result = zip(&target);
 	if result.is_err() {
 		println!("[ERROR] エラー！理由: {:?}", result.err().unwrap());
-		pause();
+		std::thread::sleep(std::time::Duration::from_secs(2));
 		return;
 	}
 
-	// 処理時間
-	let duration_time = stopwatch.elapsed_text();
-
 	// サマリー
-	println!("[TRACE] end. (処理時間: {})", duration_time);
+	println!("[TRACE] end. (処理時間: {})", stopwatch);
 
-	pause();
+	std::thread::sleep(std::time::Duration::from_secs(2));
 }
