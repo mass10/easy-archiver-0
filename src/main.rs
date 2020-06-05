@@ -119,7 +119,7 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 
 	// ディレクトリ
 	if source_path.is_dir() {
-		let dir_name = source_path.file_name().unwrap();
+		let dir_name = source_path.file_name().unwrap().to_str().unwrap();
 		if dir_name == "node_modules" {
 			return Ok(0);
 		}
@@ -199,16 +199,16 @@ fn compress(path_to_directory: &str, zip_archive_name: &str) -> std::result::Res
 }
 
 /// 一時ディレクトリ
-fn get_temp_dir(path: &str) -> std::result::Result<String, Box<dyn std::error::Error>> {
+fn create_temp_dir(path: &str) -> std::result::Result<String, Box<dyn std::error::Error>> {
 	// タイムスタンプ(%Y%m%d-%H%M%S)
 	let current_timestamp = Util::timestamp1();
 
 	// ディレクトリ名
-	let left_name = get_name_only(&path)?;
+	let name = get_name_only(&path)?;
 
 	// 一時ディレクトリの下に同名のフォルダーを作る
 	let tmp_dir = format!("C:\\tmp\\.{}.tmp", current_timestamp);
-	let tmp_dir = std::path::Path::new(&tmp_dir).join(left_name);
+	let tmp_dir = std::path::Path::new(&tmp_dir).join(name);
 	let tmp_dir = tmp_dir.to_str().unwrap();
 
 	// ディレクトリを作成
@@ -226,19 +226,19 @@ fn get_name_only(path: &str) -> std::result::Result<String, Box<dyn std::error::
 /// 書庫化 & ZIP 圧縮
 fn zip(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	// フルパスに変換
-	let left_absolute_path = get_absolute_path(path_arg)?;
+	let absolute_path = get_absolute_path(path_arg)?;
 
 	// タイムスタンプ(%Y%m%d-%H%M%S)
 	let current_timestamp = Util::timestamp1();
 
 	// 一時ディレクトリ
-	let tmp_dir = get_temp_dir(&left_absolute_path)?;
+	let tmp_dir = create_temp_dir(&absolute_path)?;
 
 	// バックアップ対象ファイルを列挙します。
-	let files_copied = xcopy(&left_absolute_path, &tmp_dir)?;
+	let files_copied = xcopy(&absolute_path, &tmp_dir)?;
 
 	// 新しいパス
-	let zip_archive_name = format!("{}-{}.zip", left_absolute_path, current_timestamp);
+	let zip_archive_name = format!("{}-{}.zip", absolute_path, current_timestamp);
 	println!("[TRACE] destination: {}", zip_archive_name.as_str());
 
 	// 書庫化
