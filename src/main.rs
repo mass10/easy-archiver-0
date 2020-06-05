@@ -1,5 +1,6 @@
 extern crate chrono;
 
+/// ユーティリティー
 struct Util {}
 
 impl Util {
@@ -19,7 +20,7 @@ impl Util {
 }
 
 /// 標準入力から1行読み込みます。
-fn input_text() -> String {
+fn read_line() -> String {
 	let mut line = String::new();
 	let result = std::io::stdin().read_line(&mut line);
 	if result.is_err() {
@@ -30,9 +31,10 @@ fn input_text() -> String {
 
 /// エンターキーが押されるまで待機します。
 fn pause() {
-	let _ = input_text();
+	let _ = read_line();
 }
 
+/// 独自フォーマッターを定義しています。
 trait MyFormatting1 {
 	/// 経過時間の文字列表現を得る
 	fn to_my_string(&self) -> String;
@@ -79,7 +81,9 @@ impl MyFormatting1 for std::time::Duration {
 	}
 }
 
+/// ストップウォッチです。
 struct Stopwatch {
+	/// インスタンスが生成された、もしくはオブジェクトがリセットされた日時を指します。
 	_time: std::time::Instant,
 }
 
