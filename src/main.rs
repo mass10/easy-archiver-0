@@ -37,14 +37,14 @@ fn pause() {
 }
 
 /// 独自フォーマッターを定義しています。
-trait MyFormatting1 {
+trait MyDurationHelper {
 	/// 経過時間の文字列表現を得る
 	fn to_string1(&self) -> String;
 	/// 経過時間の文字列表現を得る
 	fn to_string2(&self) -> String;
 }
 
-impl MyFormatting1 for std::time::Duration {
+impl MyDurationHelper for std::time::Duration {
 	fn to_string1(&self) -> String {
 		let mut sec = self.as_secs();
 		let mut min = 0;
