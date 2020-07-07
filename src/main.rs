@@ -138,6 +138,9 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		if dir_name == "Release" {
 			return Ok(0);
 		}
+		if dir_name == "ReleaseDebug" {
+			return Ok(0);
+		}
 		if dir_name == "target" {
 			return Ok(0);
 		}
@@ -227,16 +230,12 @@ fn get_name_only(path: &str) -> std::result::Result<String, Box<dyn std::error::
 fn zip(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	// フルパスに変換
 	let absolute_path = get_absolute_path(path_arg)?;
-
 	// タイムスタンプ(%Y%m%d-%H%M%S)
 	let current_timestamp = Util::timestamp1();
-
 	// 一時ディレクトリ
 	let tmp_dir = create_temp_dir(&absolute_path)?;
-
 	// バックアップ対象ファイルを列挙します。
 	let files_copied = xcopy(&absolute_path, &tmp_dir)?;
-
 	// 新しいパス
 	let zip_archive_name = format!("{}-{}.zip", absolute_path, current_timestamp);
 	println!("[TRACE] destination: {}", zip_archive_name.as_str());
