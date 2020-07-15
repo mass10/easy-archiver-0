@@ -46,20 +46,13 @@ fn prompt(message: &str) -> std::result::Result<bool, Box<dyn std::error::Error>
 		print!("(y/N): ");
 		std::io::stdout().flush().unwrap();
 		let answer = read_line().to_uppercase();
-		if answer == "Y" {
+		if answer == "Y" || answer == "YES" {
 			return Ok(true);
 		}
-		if answer == "YES" {
-			return Ok(true);
-		}
-		if answer == "N" {
-			break;
-		}
-		if answer == "NO" {
-			break;
+		if answer == "N" || answer == "NO" {
+			return Ok(false);
 		}
 	}
-	return Ok(false);
 }
 
 /// std::time::Duration にアプリケーション固有のフォーマット操作を定義しています。
