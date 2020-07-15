@@ -202,23 +202,18 @@ fn get_absolute_path(path: &str) -> std::result::Result<String, Box<dyn std::err
 	return Ok(result.to_string());
 }
 
-/// 書庫化 & 圧縮(ZIP)
+/// 書庫化 & 圧縮(7zip 呼び出し)
 fn compress(path_to_directory: &str, zip_archive_name: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
-	// 7zip 呼び出し
 	let command_path = "C:\\Program Files\\7-Zip\\7z.exe";
 	let mut command = std::process::Command::new(command_path);
 	let args = ["a", zip_archive_name, path_to_directory];
 	let mut command = command.args(&args).spawn()?;
 	let status = command.wait()?;
-
-	// 終了ステータスの確認
 	if !status.success() {
-		// バッチを終了
 		let exit_code = status.code().unwrap();
 		println!("[WARN] yarn exited with status: {}", exit_code);
 		std::process::exit(exit_code);
 	}
-
 	return Ok(());
 }
 
