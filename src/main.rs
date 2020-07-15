@@ -202,11 +202,12 @@ fn get_absolute_path(path: &str) -> std::result::Result<String, Box<dyn std::err
 	return Ok(result.to_string());
 }
 
-/// 書庫化 & 圧縮(7zip 呼び出し)
+/// 書庫化 & 圧縮
 fn compress(path_to_directory: &str, zip_archive_name: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	let command_path = "C:\\Program Files\\7-Zip\\7z.exe";
 	let mut command = std::process::Command::new(command_path);
 	let args = ["a", zip_archive_name, path_to_directory];
+	// 7zip 呼び出し
 	let mut command = command.args(&args).spawn()?;
 	let status = command.wait()?;
 	if !status.success() {
