@@ -164,8 +164,8 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 	}
 	// 先
 	let destination_path = std::path::Path::new(right);
-	// ディレクトリ
 	if source_path.is_dir() {
+		// ディレクトリ
 		// ディレクトリの妥当性を検証します。
 		if !is_valid_directory(source_path) {
 			return Ok(0);
@@ -173,25 +173,26 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		// コピー先にディレクトリを作成します。
 		std::fs::create_dir_all(destination_path)?;
 		// ディレクトリ内エントリーを走査
-		let mut files_copied = 0;
+		let mut files_affected = 0;
 		let it = std::fs::read_dir(source_path)?;
 		for e in it {
 			let entry = e?;
 			let name = entry.file_name();
 			let path = entry.path();
-			files_copied += xcopy(&path.to_str().unwrap(), destination_path.join(name).as_path().to_str().unwrap())?;
+			files_affected += xcopy(&path.to_str().unwrap(), destination_path.join(name).as_path().to_str().unwrap())?;
 		}
-		return Ok(files_copied);
-	}
-	// ファイル
-	if source_path.is_file() {
+		return Ok(files_affected);
+	} else if source_path.is_file() {
+		// ファイル
 		println!("(+) {}", destination_path.as_os_str().to_str().unwrap());
 		std::fs::copy(source_path, destination_path)?;
 		std::thread::sleep(std::time::Duration::from_millis(1));
 		return Ok(1);
+	} else {
+		// 不明なファイルシステム
+		println!("[WARN] 不明なファイルシステムです。{}", source_path.as_os_str().to_str().unwrap());
+		return Ok(0);
 	}
-	println!("[WARN] 不明なファイルシステムです。{}", source_path.as_os_str().to_str().unwrap());
-	return Ok(0);
 }
 
 /// フルパスに変換
@@ -255,7 +256,7 @@ fn zip(path_to_target: &str) -> std::result::Result<(), Box<dyn std::error::Erro
 	// 一時ディレクトリ
 	let tmp_dir = create_temp_dir(&absolute_path)?;
 	// バックアップ対象ファイルを列挙します。
-	let files_copied = xcopy(&absolute_path, &tmp_dir)?;
+	let files_affected = xcopy(&absolute_path, &tmp_dir)?;
 	// 新しいパス
 	let zip_archive_name = format!("{}-{}.zip", absolute_path, current_timestamp);
 	println!("[TRACE] destination: {}", zip_archive_name.as_str());
@@ -263,7 +264,7 @@ fn zip(path_to_target: &str) -> std::result::Result<(), Box<dyn std::error::Erro
 	// 書庫化
 	compress(&tmp_dir, zip_archive_name.as_str())?;
 
-	println!("[TRACE] {}個のファイルをコピーしました。", files_copied);
+	println!("[TRACE] {}個のファイルをコピーしました。", files_affected);
 
 	return Ok(());
 }
