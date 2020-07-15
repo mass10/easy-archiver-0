@@ -19,24 +19,50 @@ impl Util {
 	}
 }
 
-#[allow(unused)]
 /// 標準入力から1行読み込みます。終端の改行文字を除く1行全体を返します。
+#[allow(unused)]
 fn read_line() -> String {
 	let mut line = String::new();
 	let result = std::io::stdin().read_line(&mut line);
 	if result.is_err() {
 		return String::new();
 	}
-	return line;
+	return line.trim().to_string();
 }
 
-#[allow(unused)]
 /// エンターキーが押されるまで待機します。
+#[allow(unused)]
 fn pause() {
 	let _ = read_line();
 }
 
-/// 独自フォーマッターを定義しています。
+/// Yes/No で回答すべきプロンプトを表示します。
+#[allow(unused)]
+fn prompt(message: &str) -> std::result::Result<bool, Box<dyn std::error::Error>> {
+	use std::io::Write;
+
+	println!("{}", message);
+	loop {
+		print!("(y/N): ");
+		std::io::stdout().flush().unwrap();
+		let answer = read_line().to_uppercase();
+		if answer == "Y" {
+			return Ok(true);
+		}
+		if answer == "YES" {
+			return Ok(true);
+		}
+		if answer == "N" {
+			break;
+		}
+		if answer == "NO" {
+			break;
+		}
+	}
+	return Ok(false);
+}
+
+/// std::time::Duration にアプリケーション固有のフォーマット操作を定義しています。
 trait MyDurationHelper {
 	/// 経過時間の文字列表現を得る
 	fn to_string1(&self) -> String;
@@ -105,6 +131,36 @@ impl std::fmt::Display for Stopwatch {
 	}
 }
 
+/// ディレクトリの妥当性を検証します。
+fn is_valid_directory(dir: &std::path::Path) -> bool {
+	let dir_name = dir.file_name().unwrap().to_str().unwrap();
+	if dir_name == "node_modules" {
+		return false;
+	}
+	if dir_name == ".git" {
+		return false;
+	}
+	if dir_name == "dist" {
+		return false;
+	}
+	if dir_name == ".nuxt" {
+		return false;
+	}
+	if dir_name == "Debug" {
+		return false;
+	}
+	if dir_name == "Release" {
+		return false;
+	}
+	if dir_name == "ReleaseDebug" {
+		return false;
+	}
+	if dir_name == "target" {
+		return false;
+	}
+	return true;
+}
+
 /// ディレクトリをコピーします。
 fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error::Error>> {
 	// 元
@@ -113,41 +169,16 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		println!("[TRACE] invalid path {}", left);
 		return Ok(0);
 	}
-
 	// 先
 	let destination_path = std::path::Path::new(right);
-
 	// ディレクトリ
 	if source_path.is_dir() {
-		let dir_name = source_path.file_name().unwrap().to_str().unwrap();
-		if dir_name == "node_modules" {
+		// ディレクトリの妥当性を検証します。
+		if !is_valid_directory(source_path) {
 			return Ok(0);
 		}
-		if dir_name == ".git" {
-			return Ok(0);
-		}
-		if dir_name == "dist" {
-			return Ok(0);
-		}
-		if dir_name == ".nuxt" {
-			return Ok(0);
-		}
-		if dir_name == "Debug" {
-			return Ok(0);
-		}
-		if dir_name == "Release" {
-			return Ok(0);
-		}
-		if dir_name == "ReleaseDebug" {
-			return Ok(0);
-		}
-		if dir_name == "target" {
-			return Ok(0);
-		}
-
 		// コピー先にディレクトリを作成します。
 		std::fs::create_dir_all(destination_path)?;
-
 		// ディレクトリ内エントリーを走査
 		let mut files_copied = 0;
 		let it = std::fs::read_dir(source_path)?;
@@ -157,10 +188,8 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 			let path = entry.path();
 			files_copied += xcopy(&path.to_str().unwrap(), destination_path.join(name).as_path().to_str().unwrap())?;
 		}
-
 		return Ok(files_copied);
 	}
-
 	// ファイル
 	if source_path.is_file() {
 		println!("(+) {}", destination_path.as_os_str().to_str().unwrap());
@@ -168,9 +197,7 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		std::thread::sleep(std::time::Duration::from_millis(1));
 		return Ok(1);
 	}
-
 	println!("[WARN] 不明なファイルシステムです。{}", source_path.as_os_str().to_str().unwrap());
-
 	return Ok(0);
 }
 
@@ -227,9 +254,9 @@ fn get_name_only(path: &str) -> std::result::Result<String, Box<dyn std::error::
 }
 
 /// 書庫化 & ZIP 圧縮
-fn zip(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
+fn zip(path_to_target: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 	// フルパスに変換
-	let absolute_path = get_absolute_path(path_arg)?;
+	let absolute_path = get_absolute_path(path_to_target)?;
 	// タイムスタンプ(%Y%m%d-%H%M%S)
 	let current_timestamp = Util::timestamp1();
 	// 一時ディレクトリ
@@ -242,6 +269,7 @@ fn zip(path_arg: &str) -> std::result::Result<(), Box<dyn std::error::Error>> {
 
 	// 書庫化
 	compress(&tmp_dir, zip_archive_name.as_str())?;
+
 	println!("[TRACE] {}個のファイルをコピーしました。", files_copied);
 
 	return Ok(());
@@ -258,13 +286,13 @@ fn main() {
 	}
 
 	// 第一引数のみ
-	let target = &args[0];
+	let path_to_target = &args[0];
 
 	// 処理時間計測用ストップウォッチ
 	let stopwatch = Stopwatch::new();
 
 	// 書庫化 & ZIP 圧縮
-	let result = zip(&target);
+	let result = zip(&path_to_target);
 	if result.is_err() {
 		println!("[ERROR] エラー！理由: {:?}", result.err().unwrap());
 		std::thread::sleep(std::time::Duration::from_secs(2));
