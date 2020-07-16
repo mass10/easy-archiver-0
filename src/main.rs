@@ -126,31 +126,17 @@ impl std::fmt::Display for Stopwatch {
 
 /// ディレクトリの妥当性を検証します。
 fn is_valid_directory(dir: &std::path::Path) -> bool {
-	let dir_name = dir.file_name().unwrap().to_str().unwrap();
-	if dir_name == "node_modules" {
-		return false;
-	}
-	if dir_name == ".git" {
-		return false;
-	}
-	if dir_name == "dist" {
-		return false;
-	}
-	if dir_name == ".nuxt" {
-		return false;
-	}
-	if dir_name == "Debug" {
-		return false;
-	}
-	if dir_name == "Release" {
-		return false;
-	}
-	if dir_name == "ReleaseDebug" {
-		return false;
-	}
-	if dir_name == "target" {
-		return false;
-	}
+	match dir.file_name().unwrap().to_str().unwrap() {
+		"node_modules" => return false,
+		".git" => return false,
+		"dist" => return false,
+		".nuxt" => return false,
+		"Debug" => return false,
+		"Release" => return false,
+		"ReleaseDebug" => return false,
+		"target" => return false,
+		_ => {}
+	};
 	return true;
 }
 
