@@ -261,11 +261,11 @@ fn main() {
 		return;
 	}
 
-	// 第一引数のみ
-	let path_to_target = &args[0];
-
 	// 処理時間計測用ストップウォッチ
 	let stopwatch = Stopwatch::new();
+
+	// 第一引数
+	let path_to_target = &args[0];
 
 	// 書庫化 & ZIP 圧縮
 	let result = zip(&path_to_target);
