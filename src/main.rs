@@ -172,7 +172,7 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		// ファイル
 		println!("(+) {}", destination_path.as_os_str().to_str().unwrap());
 		std::fs::copy(source_path, destination_path)?;
-		std::thread::sleep(std::time::Duration::from_millis(1));
+		std::thread::sleep(std::time::Duration::from_micros(1));
 		return Ok(1);
 	} else {
 		// 不明なファイルシステム
