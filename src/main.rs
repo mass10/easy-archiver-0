@@ -1,4 +1,5 @@
 extern crate chrono;
+extern crate regex;
 
 /// ユーティリティー
 struct Util {}
@@ -140,6 +141,27 @@ fn is_valid_directory(dir: &std::path::Path) -> bool {
 	return true;
 }
 
+fn matches(regex: &str, text: &str) -> bool {
+	let reg = regex::Regex::new(regex);
+	if reg.is_err() {
+		panic!("[ERROR] 正規表現がエラー (理由: {})", reg.err().unwrap());
+	}
+	let result = reg.unwrap().find(text);
+	if result.is_none() {
+		return false;
+	}
+	return true;
+}
+
+/// ファイル名の検証
+fn is_valid_file(dir: &std::path::Path) -> bool {
+	let name = dir.file_name().unwrap().to_str().unwrap();
+	if matches("^Hook-20[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9].zip$", name) {
+		return false;
+	}
+	return true;
+}
+
 /// ディレクトリをコピーします。
 fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error::Error>> {
 	// 元
@@ -170,6 +192,9 @@ fn xcopy(left: &str, right: &str) -> std::result::Result<u32, Box<dyn std::error
 		return Ok(files_affected);
 	} else if source_path.is_file() {
 		// ファイル
+		if !is_valid_file(source_path) {
+			return Ok(0);
+		}
 		println!("(+) {}", destination_path.as_os_str().to_str().unwrap());
 		std::fs::copy(source_path, destination_path)?;
 		std::thread::sleep(std::time::Duration::from_micros(1));
