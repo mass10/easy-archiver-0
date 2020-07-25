@@ -40,7 +40,7 @@ fn pause() {
 /// Yes/No で回答すべきプロンプトを表示します。
 #[allow(unused)]
 fn prompt(message: &str) -> std::result::Result<bool, Box<dyn std::error::Error>> {
-	use std::io::Write;
+	use std::io::Write; // -> Stdout に flush() を実装するトレイト
 
 	println!("{}", message);
 	loop {
