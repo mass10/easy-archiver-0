@@ -141,6 +141,7 @@ fn is_valid_directory(dir: &std::path::Path) -> bool {
 	return true;
 }
 
+#[allow(unused)]
 fn matches(regex: &str, text: &str) -> bool {
 	let reg = regex::Regex::new(regex);
 	if reg.is_err() {
@@ -155,10 +156,8 @@ fn matches(regex: &str, text: &str) -> bool {
 
 /// ファイル名の検証
 fn is_valid_file(dir: &std::path::Path) -> bool {
+	#[allow(unused)]
 	let name = dir.file_name().unwrap().to_str().unwrap();
-	if matches("^Hook-20[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9].zip$", name) {
-		return false;
-	}
 	return true;
 }
 
