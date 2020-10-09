@@ -14,5 +14,5 @@ make.bat
 # バックアップするには
 
 ```COMMAND
-backup.bat "C:\\path\\to\\directory"
+zip.bat "C:\\path\\to\\directory"
 ```
