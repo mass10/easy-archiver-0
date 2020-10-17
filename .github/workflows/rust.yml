@@ -5,8 +5,8 @@ name: Rust のアプリケーションをビルドするワークフロー
 on:
     push:
         branches: [ master ]
-    pull_request:
-        branches: [ master ]
+#   pull_request:
+#       branches: [ master ]
 
 # ========== このワークフロー内で適用される環境変数 ==========
 env:
