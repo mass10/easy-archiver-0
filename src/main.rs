@@ -105,26 +105,28 @@ mod helper {
 	}
 }
 
-/// ストップウォッチです。
-struct Stopwatch {
-	/// インスタンスが生成された、もしくはオブジェクトがリセットされた日時を指します。
-	_time: std::time::Instant,
-}
-
-impl Stopwatch {
-	/// オブジェクトを生成します。
-	pub fn new() -> Stopwatch {
-		return Stopwatch { _time: std::time::Instant::now() };
+mod timeutil {
+	/// ストップウォッチです。
+	pub struct Stopwatch {
+		/// インスタンスが生成された、もしくはオブジェクトがリセットされた日時を指します。
+		_time: std::time::Instant,
 	}
-}
 
-impl std::fmt::Display for Stopwatch {
-	/// 経過時間の文字列表現を返します。
-	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-		use helper::MyDurationHelper;
-		let elapsed = std::time::Instant::now() - self._time;
-		write!(f, "{}", elapsed.to_string2())?;
-		return Ok(());
+	impl Stopwatch {
+		/// オブジェクトを生成します。
+		pub fn new() -> Stopwatch {
+			return Stopwatch { _time: std::time::Instant::now() };
+		}
+	}
+
+	impl std::fmt::Display for Stopwatch {
+		/// 経過時間の文字列表現を返します。
+		fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+			use super::helper::MyDurationHelper;
+			let elapsed = std::time::Instant::now() - self._time;
+			write!(f, "{}", elapsed.to_string2())?;
+			return Ok(());
+		}
 	}
 }
 
@@ -296,7 +298,7 @@ fn main() {
 	}
 
 	// 処理時間計測用ストップウォッチ
-	let stopwatch = Stopwatch::new();
+	let stopwatch = timeutil::Stopwatch::new();
 
 	// 第一引数
 	let path_to_target = &args[0];
