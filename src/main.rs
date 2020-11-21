@@ -143,6 +143,8 @@ mod application {
 			"Release" => return false,
 			"ReleaseDebug" => return false,
 			"target" => return false,
+			"ipch" => return false,
+			"x64" => return false,
 			_ => {}
 		};
 		return true;
@@ -165,7 +167,20 @@ mod application {
 	fn is_valid_file(dir: &std::path::Path) -> bool {
 		#[allow(unused)]
 		let name = dir.file_name().unwrap().to_str().unwrap();
+		// で終わる
+		if matches("-20[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9].zip$", name) {
+			return false;
+		}
+		// で終わる
 		if matches("-20[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9].zip$", name) {
+			return false;
+		}
+		// で終わる
+		if matches(".VC.db$", name) {
+			return false;
+		}
+		// で終わる
+		if matches(".ipch$", name) {
 			return false;
 		}
 		return true;
