@@ -1,3 +1,7 @@
+//!
+//! エントリーポイントの定義
+//!
+
 extern crate chrono;
 extern crate regex;
 

@@ -1,3 +1,7 @@
+//!
+//! アプリケーションメインの実装
+//!
+
 extern crate chrono;
 extern crate regex;
 

@@ -1,3 +1,7 @@
+//!
+//! 汎用的な trait を提供します。
+//!
+
 /// std::time::Duration にアプリケーション固有のフォーマット操作を定義しています。
 pub trait MyDurationHelper {
 	/// 経過時間の文字列表現を得る
